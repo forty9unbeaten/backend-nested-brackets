@@ -1,23 +1,62 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Module docstring: One line description of what your program does.
+Program that checks each line in a text file for properly nested brackets
+
 """
-__author__ = "???"
+__author__ = "Rob Spears (GitHub: Forty9Unbeaten)"
 
 import sys
 
 
 def is_nested(line):
-    """Validate a single input line for correct nesting"""
-    pass
+    bracketRef = {'(': ')', '{': '}', '[': ']', '<': '>', '(*': '*)'}
+    openBrackets = bracketRef.keys()
+    closingBrackets = bracketRef.values()
+    balanceStack = []
+    modLine = line
+
+    while modLine:
+        # token determination that accounts for two character tokens
+        # and avoids out of bounds exceptions
+        if len(modLine[0:-1]) > 1:
+            token = modLine[0] + modLine[0+1]
+            if token not in openBrackets and token not in closingBrackets:
+                token = modLine[0]
+        else:
+            token = modLine[0]
+
+        # check if token is open or closing bracket and perform
+        # appropriate checks
+        if token in openBrackets:
+            balanceStack.append(token)
+        elif token in closingBrackets:
+            if len(balanceStack) and token == bracketRef[balanceStack[-1]]:
+                balanceStack.pop()
+            else:
+                return ("Unbalanced, there is a problem with the '" + token +
+                        "' character at position " + str(line.find(modLine))
+                        + " in the line.")
+
+        # reduce line copy by the length of the token at the front of the copy
+        modLine = modLine[len(token):]
+
+    if len(balanceStack):
+        return ("Unbalanced, there is a problem with the '" + balanceStack[0] +
+                "' character at position " + str(line.find(balanceStack[0])) +
+                " in the line.")
+    else:
+        return "Perfectly Balanced!"
 
 
 def main(args):
-    """Open the input file and call `is_nested()` for each line"""
-    # Results: print to console and also write to output file
-    pass
+    with open(args, 'r') as inFile:
+        with open('output.txt', 'w') as outFile:
+            for line in inFile.readlines():
+                outFile.write(is_nested(line) + '\n')
+                print(is_nested(line))
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    # main(sys.argv[1:])
+    main('input.txt')
