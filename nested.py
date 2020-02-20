@@ -14,36 +14,40 @@ def is_nested(line):
     openBrackets = bracketRef.keys()
     closingBrackets = bracketRef.values()
     balanceStack = []
-    modLine = line
+    countStack = []
+    count = 0
 
-    while modLine:
+    while line:
         # token determination that accounts for two character tokens
         # and avoids out of bounds exceptions
-        if len(modLine[0:-1]) > 1:
-            token = modLine[0] + modLine[0+1]
+        if len(line[0:-1]) > 1:
+            token = line[0] + line[0+1]
             if token not in openBrackets and token not in closingBrackets:
-                token = modLine[0]
+                token = line[0]
         else:
-            token = modLine[0]
+            token = line[0]
 
         # check if token is open or closing bracket and perform
         # appropriate checks
         if token in openBrackets:
             balanceStack.append(token)
+            countStack.append(count)
         elif token in closingBrackets:
             if len(balanceStack) and token == bracketRef[balanceStack[-1]]:
                 balanceStack.pop()
+                countStack.pop()
             else:
                 return ("Unbalanced, there is a problem with the '" + token +
-                        "' character at position " + str(line.find(modLine))
+                        "' character at position " + str(count)
                         + " in the line.")
 
         # reduce line copy by the length of the token at the front of the copy
-        modLine = modLine[len(token):]
+        line = line[len(token):]
+        count += len(token)
 
     if len(balanceStack):
         return ("Unbalanced, there is a problem with the '" + balanceStack[0] +
-                "' character at position " + str(line.find(balanceStack[0])) +
+                "' character at position " + str(countStack[0]) +
                 " in the line.")
     else:
         return "Perfectly Balanced!"
@@ -58,5 +62,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    # main(sys.argv[1:])
-    main('input.txt')
+    main(sys.argv[1:])
