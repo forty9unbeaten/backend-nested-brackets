@@ -20,8 +20,8 @@ def is_nested(line):
     while line:
         # token determination that accounts for two character tokens
         # and avoids out of bounds exceptions
-        if len(line[0:-1]) > 1:
-            token = line[0] + line[0+1]
+        if len(line) > 1:
+            token = line[0] + line[1]
             if token not in openBrackets and token not in closingBrackets:
                 token = line[0]
         else:
@@ -62,4 +62,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(sys.argv[1])
